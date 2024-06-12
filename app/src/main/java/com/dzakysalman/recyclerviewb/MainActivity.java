@@ -1,6 +1,9 @@
 package com.dzakysalman.recyclerviewb;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity
 {
     private FloatingActionButton _addButton;
     private RecyclerView _recyclerView1;
+    private TextView _txtMahasiswaCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,7 +37,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         _recyclerView1 = (RecyclerView) findViewById(R.id.recyclerView1);
+        _txtMahasiswaCount = (TextView) findViewById(R.id.txtMahasiswaCount);
 
+        initAddButton();
+        loadRecyclerView();
+    }
+
+    private void loadRecyclerView() {
         AsyncHttpClient ahc = new AsyncHttpClient();
         String url = "https://stmikpontianak.net/011100862/tampilMahasiswa.php";
 
@@ -48,12 +58,30 @@ public class MainActivity extends AppCompatActivity
 
                 MahasiswaAdapter ma = new MahasiswaAdapter(mahasiswaModelList);
                 _recyclerView1.setAdapter(ma);
+
+                String mahasiswaCount = "Total Mahasiswa : " + ma.getItemCount();
+                _txtMahasiswaCount.setText(mahasiswaCount);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error)
             {
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private void initAddButton() {
+
+        _addButton = findViewById(R.id.addButton);
+        _addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), AddMahasiswaActivity.class);
+                startActivity(intent);
+
+                loadRecyclerView();
             }
         });
     }
